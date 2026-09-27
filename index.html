@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spy & Hunter | Secure Safehouse</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #0b0c10;
+            --bg-panel: #1f2833;
+            --bg-input: #0b0c10;
+            --accent-primary: #d4af37; /* Golden */
+            --accent-secondary: #ffdf00;
+            --text-main: #ffffff;
+            --text-muted: #c5c6c7;
+            --border-color: #d4af37;
+            --shadow-glow: rgba(212, 175, 55, 0.25);
+            --bubble-me: #262d31;
+            --bubble-other: #1f2833;
+        }
+
+        /* Themes Dictionary */
+        body.theme-golden-black {
+            --bg-main: #050505;
+            --bg-panel: #121212;
+            --bg-input: #080808;
+            --accent-primary: #d4af37;
+            --accent-secondary: #ffdf00;
+            --text-main: #f5f5f5;
+            --text-muted: #aaaaaa;
+            --border-color: #d4af37;
+            --shadow-glow: rgba(212, 175, 55, 0.3);
+            --bubble-me: #221e0a;
+            --bubble-other: #181818;
+        }
+
+        body.theme-cyberpunk {
+            --bg-main: #0d0221;
+            --bg-panel: #190933;
+            --bg-input: #050114;
+            --accent-primary: #00ffcc;
+            --accent-secondary: #ff007f;
+            --text-main: #ffffff;
+            --text-muted: #a0a0c0;
+            --border-color: #00ffcc;
+            --shadow-glow: rgba(0, 255, 204, 0.3);
+            --bubble-me: #200a3b;
+            --bubble-other: #190933;
+        }
+
+        body.theme-midnight {
+            --bg-main: #0f172a;
+            --bg-panel: #1e293b;
+            --bg-input: #090d16;
+            --accent-primary: #38bdf8;
+            --accent-secondary: #818cf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #38bdf8;
+            --shadow-glow: rgba(56, 189, 248, 0.3);
+            --bubble-me: #1e3a8a;
+            --bubble-other: #1e293b;
+        }
+
+        body.theme-emerald {
+            --bg-main: #022c22;
+            --bg-panel: #064e3b;
+            --bg-input: #011c16;
+            --accent-primary: #34d399;
+            --accent-secondary: #6ee7b7;
+            --text-main: #ecfdf5;
+            --text-muted: #a7f3d0;
+            --border-color: #34d399;
+            --shadow-glow: rgba(52, 211, 153, 0.3);
+            --bubble-me: #065f46;
+            --bubble-other: #064e3b;
+        }
+
+        body.theme-royal {
+            --bg-main: #1e1b4b;
+            --bg-panel: #312e81;
+            --bg-input: #0f0d2b;
+            --accent-primary: #c084fc;
+            --accent-secondary: #f472b6;
+            --text-main: #faf5ff;
+            --text-muted: #e9d5ff;
+            --border-color: #c084fc;
+            --shadow-glow: rgba(192, 132, 252, 0.3);
+            --bubble-me: #4338ca;
+            --bubble-other: #312e81;
+        }
+
+        body.theme-sunset {
+            --bg-main: #2b0b0b;
+            --bg-panel: #4a1515;
+            --bg-input: #170404;
+            --accent-primary: #fb923c;
+            --accent-secondary: #f87171;
+            --text-main: #fff7ed;
+            --text-muted: #fed7aa;
+            --border-color: #fb923c;
+            --shadow-glow: rgba(251, 146, 60, 0.3);
+            --bubble-me: #7c2d12;
+            --bubble-other: #4a1515;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Setup Overlay Modal */
+        #setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .setup-card {
+            background: var(--bg-panel);
+            border: 2px solid var(--border-color);
+            padding: 40px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 0 30px var(--shadow-glow);
+            text-align: center;
+        }
+
+        .setup-card h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .setup-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .setup-input {
+            width: 100%;
+            padding: 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-primary);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--shadow-glow);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* App Container */
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-panel);
+            border-bottom: 2px solid var(--border-color);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px var(--shadow-glow);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-area i {
+            font-size: 26px;
+            color: var(--accent-primary);
+        }
+
+        .logo-area h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            letter-spacing: 2px;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-select {
+            background: var(--bg-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .whatsapp-btn {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            box-shadow: 0 0 10px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-btn:hover {
+            background: #22bf5b;
+        }
+
+        /* Main Workspace: Left Side Online Operatives, Right Side Chat */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            background: var(--bg-main);
+        }
+
+        /* Left Sidebar: Online Operatives & Safehouses */
+        .sidebar-left {
+            width: 320px;
+            background: var(--bg-panel);
+            border-right: 2px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            color: var(--accent-primary);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .room-info {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .room-info span {
+            color: var(--accent-primary);
+            font-weight: bold;
+        }
+
+        .operatives-list {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .operative-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: var(--bg-input);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .operative-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+        }
+
+        .operative-details h4 {
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .operative-details p {
+            font-size: 11px;
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Right Window: Chat Area */
+        .chat-container-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-main);
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 12px 20px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .channel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background-image: radial-gradient(var(--border-color) 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+            background-opacity: 0.05;
+        }
+
+        .message-bubble {
+            max-width: 65%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            word-wrap: break-word;
+        }
+
+        .message-bubble.me {
+            background: var(--bubble-me);
+            align-self: flex-end;
+            border-right: 3px solid var(--accent-primary);
+        }
+
+        .message-bubble.other {
+            background: var(--bubble-other);
+            align-self: flex-start;
+            border-left: 3px solid var(--accent-secondary);
+        }
+
+        .msg-sender {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .msg-text {
+            font-size: 14px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .msg-time {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* Chat Input Footer */
+        .chat-input-area {
+            padding: 16px 20px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .action-icon-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--accent-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .action-icon-btn:hover {
+            background: var(--accent-primary);
+            color: #000;
+        }
+
+        .action-icon-btn.recording {
+            background: #ff0055;
+            color: #fff;
+            border-color: #ff0055;
+            animation: pulse-rec 1.2s infinite;
+        }
+
+        @keyframes pulse-rec {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 0, 85, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); }
+        }
+
+        /* Responsive */
+        @media(max-width: 900px) {
+            .workspace {
+                flex-direction: column;
+            }
+            .sidebar-left {
+                width: 100%;
+                max-height: 150px;
+                border-right: none;
+                border-bottom: 2px solid var(--border-color);
+            }
+        }
+    </style>
+</head>
+<body class="theme-golden-black">
+
+    <!-- Setup Modal for Agent Identity -->
+    <div id="setup-modal">
+        <div class="setup-card">
+            <h2><i class="fa-solid fa-user-secret"></i> SPY & HUNTER</h2>
+            <p>Enter your Agent Codename to access the encrypted safehouse network.</p>
+            <input type="text" id="agent-name-input" class="setup-input" placeholder="e.g. ShadowHunter" maxlength="15" autocomplete="off">
+            <button class="btn-primary" onclick="initializeAgent()">ACCESS SAFE HOUSE</button>
+        </div>
+    </div>
+
+    <!-- Main Application UI -->
+    <div id="app-container">
+        <!-- Header -->
+        <header>
+            <div class="logo-area">
+                <i class="fa-solid fa-crosshairs"></i>
+                <h1>Spy & Hunter <span>🎯</span></h1>
+            </div>
+            <div class="header-controls">
+                <select id="theme-selector" class="theme-select" onchange="changeTheme(this.value)">
+                    <option value="theme-golden-black">👑 Golden & Black (Luxury)</option>
+                    <option value="theme-cyberpunk">⚡ Cyberpunk Neon</option>
+                    <option value="theme-midnight">🌌 Midnight Obsidian</option>
+                    <option value="theme-emerald">💎 Emerald Matrix</option>
+                    <option value="theme-royal">🔮 Royal Velvet</option>
+                    <option value="theme-sunset">🔥 Sunset Syndicate</option>
+                </select>
+                <button class="whatsapp-btn" onclick="shareToWhatsApp()">
+                    <i class="fa-brands fa-whatsapp"></i> Invite Operative
+                </button>
+            </div>
+        </header>
+
+        <!-- Workspace Layout -->
+        <div class="workspace">
+            
+            <!-- Left Sidebar: Online Operatives List -->
+            <aside class="sidebar-left">
+                <div class="sidebar-header">
+                    <h3><i class="fa-solid fa-users"></i> Online Agents 🕵️‍♂️</h3>
+                </div>
+                <div class="room-info">
+                    Active Safehouse Channel: <span id="display-room-id">ALPHA-9</span>
+                </div>
+                <div class="operatives-list" id="operatives-container">
+                    <!-- Dynamically populated agents list -->
+                </div>
+            </aside>
+
+            <!-- Right Window: Chat Room -->
+            <main class="chat-container-right">
+                <div class="chat-header">
+                    <div class="channel-title">
+                        <i class="fa-solid fa-shield-halved"></i> Secure Comms Channel 🕶️
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted);" id="connection-status">
+                        ● Secure Link Active
+                    </div>
+                </div>
+
+                <!-- Messages Stream -->
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Initial System Announcement -->
+                    <div class="message-bubble other" style="align-self: center; background: rgba(212,175,55,0.1); border: 1px dashed var(--border-color); max-width: 85%; text-align: center;">
+                        <div class="msg-sender" style="justify-content: center;"><i class="fa-solid fa-terminal"></i> Central HQ Command</div>
+                        <div class="msg-text" style="font-size: 13px;">Welcome to Spy & Hunter Encrypted Network. All operatives in this channel can exchange live transmissions. Use Voice-to-Text or direct keyboard input.</div>
+                    </div>
+                </div>
+
+                <!-- Chat Footer Input -->
+                <div class="chat-input-area">
+                    <button class="action-icon-btn" id="mic-btn" title="Voice-to-Text (Click & Speak)" onclick="toggleVoiceInput()">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <input type="text" id="chat-input-box" class="chat-input" placeholder="Type secure transmission..." autocomplete="off" onkeypress="handleKeyPress(event)">
+                    <button class="action-icon-btn" title="Send Transmission" onclick="sendMessage()">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let currentAgentName = "";
+        let currentRoomId = "ALPHA-9";
+        let isRecording = false;
+        let recognition = null;
+
+        // Extract Room ID from URL if invited via WhatsApp link
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomParam = urlParams.get('room');
+            if(roomParam) {
+                currentRoomId = roomParam.toUpperCase();
+            }
+            document.getElementById('display-room-id').innerText = currentRoomId;
+            loadStoredMessages();
+        });
+
+        function initializeAgent() {
+            const inputVal = document.getElementById('agent-name-input').value.trim();
+            if(!inputVal) {
+                alert("Please enter a valid agent codename!");
+                return;
+            }
+            currentAgentName = inputVal;
+            document.getElementById('setup-modal').style.display = 'none';
+            
+            updateOperativesList();
+            addMessageToChat("System", `${currentAgentName} has successfully entered the safehouse.`, true);
+        }
+
+        // Change Theme function
+        function changeTheme(themeName) {
+            document.body.className = themeName;
+            localStorage.setItem('spy_hunter_theme', themeName);
+        }
+
+        // Load saved theme on start
+        window.addEventListener('load', () => {
+            const savedTheme = localStorage.getItem('spy_hunter_theme');
+            if(savedTheme) {
+                document.body.className = savedTheme;
+                document.getElementById('theme-selector').value = savedTheme;
+            }
+        });
+
+        // WhatsApp Share Direct Integration
+        function shareToWhatsApp() {
+            const currentUrl = window.location.href.split('?')[0] + "?room=" + currentRoomId;
+            const text = encodeURIComponent(`🕵️‍♂️ Join my Spy & Hunter Secure Safehouse! Click the encrypted link to enter the mission:\n\n${currentUrl}`);
+            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+        }
+
+        // Operatives Active List
+        function updateOperativesList() {
+            const container = document.getElementById('operatives-container');
+            let agents = [currentAgentName, "ShadowAgent", "PhantomX", "CyberNinja"];
+            
+            container.innerHTML = "";
+            agents.forEach((agent) => {
+                if(!agent) return;
+                const initial = agent.charAt(0).toUpperCase();
+                const div = document.createElement('div');
+                div.className = 'operative-item';
+                div.innerHTML = `
+                    <div class="operative-avatar">${initial}</div>
+                    <div class="operative-details">
+                        <h4>${agent} ${agent === currentAgentName ? '(You)' : ''}</h4>
+                        <p><i class="fa-solid fa-circle" style="font-size: 8px;"></i> Active Operative</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Send Message logic
+        function handleKeyPress(e) {
+            if(e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input-box');
+            const text = input.value.trim();
+            if(!text) return;
+            
+            if(!currentAgentName) {
+                alert("Please set your codename first!");
+                return;
+            }
+
+            addMessageToChat(currentAgentName, text, false);
+            input.value = "";
+            saveMessageToStorage(currentAgentName, text);
+        }
+
+        function addMessageToChat(sender, text, isSystem) {
+            const chatMessages = document.getElementById('chat-messages');
+            const bubble = document.createElement('div');
+            const isMe = (sender === currentAgentName && !isSystem);
+            
+            bubble.className = `message-bubble ${isSystem ? 'other' : (isMe ? 'me' : 'other')}`;
+            if(isSystem) {
+                bubble.style.margin = "0 auto";
+                bubble.style.textAlign = "center";
+            }
+
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            bubble.innerHTML = `
+                ${!isSystem ? `<div class="msg-sender"><i class="fa-solid fa-user-secret"></i> ${sender}</div>` : ''}
+                <div class="msg-text">${escapeHtml(text)}</div>
+                <div class="msg-time">${timeStr}</div>
+            `;
+
+            chatMessages.appendChild(bubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Voice-to-Text via Web Speech API
+        function toggleVoiceInput() {
+            const micBtn = document.getElementById('mic-btn');
+            const inputField = document.getElementById('chat-input-box');
+
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Voice-to-text is not supported by your browser. Try using Google Chrome.");
+                return;
+            }
+
+            if (isRecording) {
+                if (recognition) recognition.stop();
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = true;
+            recognition.continuous = false;
+
+            recognition.onstart = () => {
+                isRecording = true;
+                micBtn.classList.add('recording');
+                inputField.placeholder = "Listening... Speak your transmission...";
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                inputField.value = transcript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+                stopVoiceUI();
+            };
+
+            recognition.onend = () => {
+                stopVoiceUI();
+            };
+
+            recognition.start();
+        }
+
+        function stopVoiceUI() {
+            isRecording = false;
+            const micBtn = document.getElementById('mic-btn');
+            const inputField = document.getElementById('chat-input-box');
+            micBtn.classList.remove('recording');
+            inputField.placeholder = "Type secure transmission...";
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function saveMessageToStorage(sender, text) {
+            let messages = JSON.parse(localStorage.getItem('spy_hunter_msgs_' + currentRoomId) || '[]');
+            messages.push({ sender, text, time: Date.now() });
+            localStorage.setItem('spy_hunter_msgs_' + currentRoomId, JSON.stringify(messages));
+        }
+
+        function loadStoredMessages() {
+            let messages = JSON.parse(localStorage.getItem('spy_hunter_msgs_' + currentRoomId) || '[]');
+            messages.forEach(m => {
+                if(m.sender !== currentAgentName) {
+                    addMessageToChat(m.sender, m.text, false);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
